@@ -158,8 +158,16 @@ const getWordTrends = async (
     `&smoothing=${smoothing}` +
     `${case_insensitive ? "&case_insensitive=true" : ""}`;
 
+  const url_to_return =
+    `https://books.google.com/ngrams/graph?content=${encodedQuery}` +
+    `&year_start=${year_start}` +
+    `&year_end=${year_end}` +
+    `&corpus=${corpus}` +
+    `&smoothing=${smoothing}` +
+    `${case_insensitive ? "&case_insensitive=true" : ""}`;
+
   console.log(url);
-  url_res.push(url);
+  url_res.push(url_to_return);
 
   const response = await axios.get(url);
 
