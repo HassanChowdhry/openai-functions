@@ -3,13 +3,42 @@ import { useState } from "react";
 import { Textarea } from "@nextui-org/input";
 import { Button } from "@nextui-org/button";
 import { useRouter } from "next/navigation";
+import { useAction } from "convex/react";
+import { CircularProgress } from "@nextui-org/progress";
 
+import { api } from "@/convex/_generated/api";
 import { title } from "@/components/primitives";
 import { PageProps } from "@/types";
 
 const ThreadFunction = ({ params: { threadId } }: PageProps) => {
   const [isWithMessage, setIsWithMessage] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
+  const useFunctionWithMessage = useAction(api.openai.useFunctionWithMessage);
+  const useFunctionWithOutMessage = useAction(
+    api.openai.useFunctionWithOutMessage,
+  );
+  const [message, setMessage] = useState("");
+
+  const useWithMessage = async () => {
+    setIsLoading(true);
+    try {
+      const response = await useFunctionWithMessage({ threadId, message });
+    } catch (error) {
+      console.error(error);
+    }
+    setIsLoading(false);
+  };
+
+  const useWithOutMessage = async () => {
+    setIsLoading(true);
+    try {
+      const response = await useFunctionWithOutMessage({ threadId });
+    } catch (error) {
+      console.error(error);
+    }
+    setIsLoading(false);
+  };
 
   return (
     <section className="flex flex-col items-center justify-center gap-4 py-8 md:py-10 mt-[100px]">
@@ -57,16 +86,29 @@ const ThreadFunction = ({ params: { threadId } }: PageProps) => {
             placeholder="Type your message here..."
             style={{ fontSize: "18px" }}
             type="text"
+            onChange={(e) => setMessage(e.target.value)}
           />
-          <Button className="w-full" size="lg" variant="ghost">
+          <Button
+            className="w-full"
+            size="lg"
+            variant="ghost"
+            onClick={useWithMessage}
+          >
             Use Function with Message
+            {isLoading && <CircularProgress size="sm" />}
           </Button>
         </section>
       ) : (
         <section className="flex flex-col mt-10 w-[650px]">
           <h2 className={title()}>Use Function on queued message</h2>
-          <Button className="mt-4 w-full" size="lg" variant="ghost">
+          <Button
+            className="mt-4 w-full"
+            size="lg"
+            variant="ghost"
+            onClick={useWithOutMessage}
+          >
             Use Function Without Message
+            {isLoading && <CircularProgress size="sm" />}
           </Button>
         </section>
       )}

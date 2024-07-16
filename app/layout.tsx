@@ -2,6 +2,7 @@ import "@/styles/globals.css";
 import { Metadata, Viewport } from "next";
 import clsx from "clsx";
 
+import { ConvexClientProvider } from "./ConvexClientProvider";
 import { Providers } from "./providers";
 
 import { siteConfig } from "@/config/site";
@@ -44,7 +45,7 @@ export default function RootLayout({
           <div className="relative flex flex-col h-screen">
             <Navbar />
             <main className="container mx-auto max-w-7xl pt-16 px-6 flex-grow">
-              {children}
+              <ConvexClientProvider>{children}</ConvexClientProvider>
             </main>
           </div>
         </Providers>
